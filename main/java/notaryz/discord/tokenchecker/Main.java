@@ -12,19 +12,28 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        System.out.println("Discord Token Checker by nttZx" + "\n Cod");
+        System.out.println("Discord Token Checker by notaryz");
 
         List<String> TokenValid = new ArrayList<>();
         List<String> TokenUnverified = new ArrayList<>();
         List<String> TokenInvalid = new ArrayList<>();
         Path path = Paths.get("./tokens.txt");
-        long nbTok = Files.lines(path).count();
-        List<String> TokenToVerify = new ArrayList<>(Files.readAllLines(path));
+        byte[] insrt = "/ INSERT YOUR TOKENS BELOW - DON'T DELETE THIS LINE! \\".getBytes();
         FileWriter validFile = new FileWriter("valid.txt");
         FileWriter invalidFile = new FileWriter("invalid.txt");
         FileWriter unverifiedFile = new FileWriter("unverified.txt");
         OkHttpClient client = new OkHttpClient();
+        if(!Files.exists(path)){
+            Files.createFile(path);
+            Files.write(path, insrt);
+            System.out.println("Plz insert your tokens in token.txt !");
+        }
+        else if(Files.lines(path).count() == 1){
+            System.out.println("Plz insert your tokens in token.txt !");
+        }
         int i;
+        long nbTok = Files.lines(path).count();
+        List<String> TokenToVerify = new ArrayList<>(Files.readAllLines(path));
         for(i = 1; i < nbTok; i++){
             int tooken = 0;
             Request request = new Request.Builder()
