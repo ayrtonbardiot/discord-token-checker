@@ -13,28 +13,25 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws Exception {
         System.out.println("Discord Token Checker by notaryz");
-
         List<String> TokenValid = new ArrayList<>();
         List<String> TokenUnverified = new ArrayList<>();
         List<String> TokenInvalid = new ArrayList<>();
         Path path = Paths.get("./tokens.txt");
-        byte[] insrt = "/ INSERT YOUR TOKENS BELOW - DON'T DELETE THIS LINE! \\".getBytes();
         FileWriter validFile = new FileWriter("valid.txt");
         FileWriter invalidFile = new FileWriter("invalid.txt");
         FileWriter unverifiedFile = new FileWriter("unverified.txt");
         OkHttpClient client = new OkHttpClient();
         if(!Files.exists(path)){
             Files.createFile(path);
-            Files.write(path, insrt);
-            System.out.println("Plz insert your tokens in token.txt !");
-        }
-        else if(Files.lines(path).count() == 1){
-            System.out.println("Plz insert your tokens in token.txt !");
+            System.out.println("Plz insert your tokens in tokens.txt !");
         }
         int i;
         long nbTok = Files.lines(path).count();
         List<String> TokenToVerify = new ArrayList<>(Files.readAllLines(path));
-        for(i = 1; i < nbTok; i++){
+        if(nbTok == 0){
+            System.out.println("Plz insert your tokens in tokens.txt !");
+        }
+        for(i = 0; i < nbTok; i++){
             int tooken = 0;
             Request request = new Request.Builder()
                     .url("https://discord.com/api/v6/users/@me")
@@ -44,24 +41,24 @@ public class Main {
             Response response = client.newCall(request).execute();
             if(response.code() == 200)
             {
-                TokenToVerify.remove(tooken);
                 TokenValid.add(TokenToVerify.get(0));
-                validFile.write(TokenToVerify.get(tooken) + "\n");
+                TokenToVerify.remove(tooken);
+                validFile.write(TokenValid.get(tooken) + "\n");
                 clearScreen();
                 System.out.println("Valid: " + TokenValid.size() + " | Invalid: " + TokenInvalid.size() + " | Unverified: " + TokenUnverified.size());
 
             }
             else if(response.code() == 401){
-                TokenToVerify.remove(tooken);
                 TokenInvalid.add(TokenToVerify.get(tooken));
-                invalidFile.write(TokenToVerify.get(tooken) + "\n");
+                TokenToVerify.remove(tooken);
+                invalidFile.write(TokenInvalid.get(tooken) + "\n");
                 clearScreen();
                 System.out.println("Valid: " + TokenValid.size() + " | Invalid: " + TokenInvalid.size() + " | Unverified: " + TokenUnverified.size());
             }
             else if(response.code() != 401 || response.code() != 200){
-                TokenToVerify.remove(tooken);
                 TokenUnverified.add(TokenToVerify.get(tooken));
-                unverifiedFile.write(TokenToVerify.get(tooken) + "\n");
+                TokenToVerify.remove(tooken);
+                unverifiedFile.write(TokenUnverified.get(tooken) + "\n");
                 clearScreen();
                 System.out.println("Valid: " + TokenValid.size() + " | Invalid: " + TokenInvalid.size() + " | Unverified: " + TokenUnverified.size());
             }
